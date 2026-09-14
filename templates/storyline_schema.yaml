@@ -1,0 +1,207 @@
+# STORYLINE SCHEMA - annotated reference for storyline/storyline.yaml
+#
+# This file documents every layout and slot. Copy the pieces you need.
+# The linter (cscg/verify.py) enforces the rules noted here, so following them saves
+# a round trip.
+
+meta:
+  title: "UNC Athletics: student ticketing"   # internal name
+  client: "UNC Athletics"
+  term: "Fall 2026"            # appears in the eyebrow on every slide
+  theme: dark                  # dark = the 2026 CSCG finals (default) | light
+  client_logo: ""              # optional; UNC Athletics gets the UNC logo automatically
+  synthetic: false             # true stamps a warning banner on every slide
+  filename: "CSCG_UNC_Ticketing_Cycle1.pptx"
+  accent_override: ""          # hex, for non-UNC clients
+
+governing_thought: >
+  Not rendered. Written here so the argument is visible to anyone reading the file, and
+  so the QA agent can check the deck against its own stated thesis.
+
+slides:
+
+# ---------------------------------------------------------------------------
+# Every non-title slide accepts:
+#   kicker:  ALL-CAPS label naming the slide's job
+#   title:   sentence-case action title carrying the number - the finding itself
+#   cites:   [F001, ...]  finding IDs behind every number on the slide  (REQUIRED)
+#   source:  question wording, base, test, population qualifier          (REQUIRED)
+#   allow_numbers: [422, 3]   numbers from the instrument, not from a finding
+#                             (field dates, session counts) - use sparingly
+#   section: "Ticket access"  which agenda item this slide belongs to; lights up its
+#                             footer tab. Must match an agenda item exactly.
+#
+# Word budgets that fit at the minimum readable type size (the build reports an
+# overflow past these - it never shrinks the type):
+#   title <= 2 lines (~28 words)          source <= 2 lines (~40 words)
+#   exec-summary statement ~30, so-what ~15    annotation box ~35
+#   how_to_read <= 5 bullets of ~20           agenda item <= 4 words
+# ---------------------------------------------------------------------------
+
+  - layout: title
+    client: "UNC Athletics"
+    subject: "Student Ticketing & Gameday Experience"
+    descriptor: "Cycle 1 findings for UNC Athletics"
+    date: "October 19, 2026"
+    # The cover shows CSCG mark | client logo. The client NAME appears only when no
+    # logo is on file.
+
+  # ALWAYS slide 2. 3-6 section names of 4 words or fewer, no numbers. They become the
+  # footer tabs, so every body slide's `section:` must match one of them.
+  - layout: agenda
+    title: "Agenda"
+    items: ["Who we heard from", "Ticket access", "The lottery", "Next steps"]
+
+  # Answer first. 3-5 findings, each a complete sentence with its own number, each
+  # followed by a So what that names an action, a test or a decision.
+  - layout: executive_summary
+    kicker: "EXECUTIVE SUMMARY"
+    title: "The one-sentence answer to the business question."
+    cites: [F012, F034]
+    findings:
+      - statement: "56% of grad/professional respondents naming a barrier didn't know how to get tickets, vs 19% of undergrads."
+        so_what: "Target ticket outreach at grad/professional students before redesigning the lottery."
+        cites: [F012]
+    source: "Source: ... Respondents, not all students."
+
+  # Sample composition and limitations, BEFORE any finding. Required in every
+  # findings deck.
+  - layout: how_to_read
+    kicker: "WHO WE HEARD FROM"
+    title: "How this sample is skewed, stated before any result."
+    cites: [F001, F002]
+    allow_numbers: [422, 43]
+    stats:
+      - {value: "422", label: "responses analysed after quality checks"}
+      - {value: "26%", label: "of respondents are grad/professional, vs 36% of all UNC students"}
+    bullets:
+      - "Fielded Sep 29 - Oct 3, 2026. 43 responses excluded: duplicates, incompletes, speeders."
+      - "Distributed through student organisations (non-random). Results describe respondents."
+      - "Results are unweighted: read segment results by group, not the all-respondent total."
+      - "Differences are called out only when statistically tested and at least 10 points apart."
+      - "A dagger marks groups under 30 respondents: directional only."
+    source: "Source: ... Benchmarks: UNC By the Numbers 2026."
+
+  # The workhorse: chart left, three annotation boxes right.
+  - layout: chart_with_notes
+    kicker: "TICKET ACCESS"
+    title: "56% of grad/professional respondents naming a barrier didn't know how to get tickets, vs 19% of undergrads."
+    section: "Ticket access"
+    cites: [F012, F018]
+    chart:
+      finding_id: F012          # REQUIRED - no chart without a finding
+      # grouped_bar | ranked_bar | column | line | donut | pie | table |
+      # stacked_likert | quadrant_scatter      - see config/chart_rules.yaml: selection
+      type: grouped_bar
+      highlight: "Graduate/professional"
+      top_n: 8                  # ranked_bar only
+      # How the value labels should READ. Omit and the finding's metric decides.
+      # Declare it for the one case the metric cannot express: the mean of a variable
+      # that is itself a percentage (0-100), which would otherwise render as "19.86".
+      # percent | percent_100 | percent_100_1dp | correlation | integer | number
+      value_format: percent
+    chart_caption: "Didn't know how to get student tickets"
+    notes:                      # exactly 3, labels from the house vocabulary
+      - {label: "WHO CITES IT", text: "Which segment drives the number."}
+      - {label: "WATCH-OUT",    text: "The reason not to over-read it."}
+      - {label: "IMPLICATION",  text: "What this would change if true."}
+    source: "Source: ... n=371. Difference statistically tested, adjusted for multiple comparisons."
+
+  # Two paired comparisons stacked. Use for null results: showing a difference does
+  # NOT track a suspected variable is a real slide.
+  - layout: comparison_pair
+    kicker: "TARGETING THE MESSAGE"
+    title: "Awareness gaps track student level, not Greek or Fever status."
+    cites: [F021, F022]
+    charts:
+      - {finding_id: F021, type: grouped_bar, caption: "Undergrads: didn't know how to get tickets"}
+      - {finding_id: F022, type: grouped_bar, caption: "Undergrads: know when requests open"}
+    caption: "Undergraduates only. Across all respondents the gaps reflect the grad/professional overlap."
+    source: "Source: ... Neither pair shows a clear difference (BH-adjusted)."
+
+  # Qualitative. Prevalence as a count over a base, never a survey percentage.
+  - layout: quotes_themes
+    kicker: "IN COMMENTERS' WORDS"
+    title: "Comments point to three lottery changes."
+    cites: [Q086, Q087]
+    themes:
+      - name: "Requests that fit around class"
+        prevalence: "54 of 224 comments; 2 of 3 focus groups"
+        quotes:
+          - {text: "Requests open during class and the site crashes.", attribution: "Undergraduate, focus group"}
+    source: "Source: ... 224 coded comments. Focus groups add voice, not prevalence."
+
+  - layout: stat_row
+    kicker: "SCALE"
+    title: "Three numbers that frame the problem."
+    cites: [F001]
+    stats:
+      - {value: "422", label: "responses analysed"}
+    source: "Source: ..."
+
+  - layout: three_cards
+    kicker: "WORKSTREAMS"
+    title: "Three parallel concepts."
+    cites: []
+    allow_numbers: []
+    cards:
+      - {n: 1, head: "Card heading", sub: "Supporting line", bullets: ["Detail", "Detail"]}
+    source: "Source: ..."
+
+  # Only when the project is chartered to recommend (close_with: recommendations).
+  - layout: recommendation_table
+    kicker: "WHERE TO SPEND FIRST"
+    title: "Fund the operational fixes before the capital projects."
+    lead: "Ordered by strength of the measured relationship, against cost to act."
+    cites: [F071]
+    rows:
+      - recommendation: "Publish kickoff times earlier"
+        evidence: "Raised in 4 of 6 focus groups; never asked in the survey."
+        implication: "Low cost. Test before next season."
+    source: "Source: ..."
+
+  # The CSCG default close.
+  - layout: discussion_questions
+    kicker: "FOR DISCUSSION"
+    title: "Three decisions to shape with students."
+    cites: [F012]
+    questions:
+      - question: "How should Athletics reach grad and international students each fall?"
+        why: "The sharpest segment gap on access, and the channel is still an open choice."
+    source: "Source: ..."
+
+  - layout: section
+    label: "PART TWO"
+    title: "What the lottery would have to change."
+
+# ---------------------------------------------------------------------------
+# CHART TYPE EXAMPLES - any of these can sit in `chart:` or in `charts:`
+# ---------------------------------------------------------------------------
+#
+# Part of ONE whole (slices must sum to 100%; composition or distribution findings):
+#   chart: {finding_id: F_comp_ticket_source, type: donut, highlight: "Lottery",
+#           centre_label: "get tickets through the lottery"}
+#
+# An outcome across ORDERED bands or time; several series share the same bands:
+#   chart: {finding_id: F_renewed_by_band, finding_ids: [F_renewed_by_band, F_atmos_by_band],
+#           type: line, labels: ["Renewed", "Atmosphere top-box"], highlight: "Renewed",
+#           value_format: percent}
+#
+# An ordered scale, left to right (not sorted):
+#   chart: {finding_id: F_relevance_now, type: column, highlight: "Extremely relevant"}
+#
+# Several attributes across several groups - a native, editable table:
+#   chart: {finding_id: F_renewed_by_type,
+#           finding_ids: [F_renewed_by_type, F_price_by_type, F_increase_by_type],
+#           type: table, row_label: "Account type",
+#           column_labels: ["Renewed", "Price per seat", "Price increase"],
+#           value_formats: [percent, currency, percent_100_1dp],
+#           highlight: "Student pass holders"}
+#
+# One finding as a table of value and base:
+#   chart: {finding_id: F_barriers, type: table, columns: [value, n],
+#           value_label: "Cite it", row_label: "Barrier"}
+#
+# In a comparison_pair, donut / pie / column / table sit side by side automatically;
+# bars stack. Force either with `arrangement: side_by_side`.
+

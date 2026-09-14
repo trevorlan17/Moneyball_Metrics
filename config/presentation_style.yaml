@@ -1,0 +1,316 @@
+# CSCG PRESENTATION STYLE SPECIFICATION
+# Derived from: CSCG_UNC_Kickoff (Fall 2026), DEMO_SYNTHETIC_CSCG_Ticketing_Deck,
+# CSCG Coastal State Athletics, ESPN x CSCG Midpoint.
+# This file is the single source of truth for deck appearance. Edit here, not in code.
+
+meta:
+  version: "1.0"
+  derived_from:
+    - "CSCG_UNC_Kickoff (1).pptx      # grid, type scale, palette, footer system"
+    - "DEMO_SYNTHETIC_CSCG_Ticketing_Deck_light.pdf  # findings-deck storyline + evidence discipline"
+    - "CSCG Coastal State Athletics.pptx             # recommendation table, loud-vs-decisive framing"
+    - "ESPN x CSCG Midpoint Presentation.pptx        # segment slides, quote slides, client questions"
+  # GROUND TRUTH from Sep 2026. Where these disagree with the files above, these win.
+  ground_truth:
+    - "CSCG x PM Final Presentation (Spring 2026)    # agenda slide 2, section tabs, logo lockup, cards, tables"
+    - "CSCG x JGR Final Presentation (Spring 2026)   # three-pillar exec summary, donut + observations"
+    - "Nike x CSCG Final Presentation (Spring 2026)  # CSCG | client title lockup, footer logos"
+    - "McKinsey UCA SAG slides; MGI adaptation; McKinsey blockchain  # split panels, donut centre numbers, agenda"
+
+canvas:
+  width_in: 13.333
+  height_in: 7.5
+  # All geometry below is in inches, measured off the UNC kickoff deck.
+
+grid:
+  margin_left: 0.55
+  margin_right: 0.55
+  content_width: 12.23      # 13.333 - 0.55 - 0.55
+  eyebrow_y: 0.16           # "Fall 2026 Carolina Sports Consulting Group" (tiny, top-left)
+  kicker_y: 0.40            # optional ALL-CAPS slide-job label
+  title_y: 0.40             # action title; moves down under a kicker automatically
+  title_max_lines: 2
+  # The evidence zone starts under the MEASURED title, not at a fixed line. A fixed
+  # body_top left a dead band under every one-line title (the 2026-09 feedback).
+  title_to_body_gap: 0.30
+  body_top_min: 1.35
+  body_top: 2.05            # used only by layouts that need a fixed start
+  body_bottom: 6.30         # bottom of the evidence zone
+  source_y: 6.42            # source / method footnote block (max 2 lines)
+  footer_y: 6.98            # logos, section tabs, page number
+  gutter: 0.30              # standard gap between cards
+  card_pad: 0.20            # inner padding on every card, all four sides
+
+typography:
+  # Arial only. Observed across the entire UNC kickoff deck. Universally available,
+  # renders identically in PowerPoint, Keynote and Google Slides - which matters
+  # because CSCG decks get opened in all three.
+  font: "Arial"
+  fallback: "Helvetica"
+  sizes:
+    display: 40       # title-slide subject line
+    title: 24         # action title. Steps down to title_min, never below.
+    title_min: 20
+    section: 34       # divider slides
+    stat_hero: 40     # the big number on stat rows
+    card_head: 16.5
+    lead: 14          # lead line inside a card / annotation box head
+    body: 11.5
+    body_small: 10.3
+    kicker: 12
+    eyebrow: 9.5
+    label: 10         # chart axis + annotation-box labels
+    source: 8         # source line. Small, but 7.5 printed illegibly in the 2026-09 review.
+    footer: 8
+  # Floors. A layout that cannot fit its text at these sizes reports an overflow and the
+  # fix is to cut words - it never shrinks type further. Shrink-to-fit is what produced
+  # the unreadable exec summary and how-to-read slides in the 2026-09 review.
+  min_readable:
+    body: 10.5
+    note: 10.5
+    card_head: 12.5
+    source: 7.5
+  bold_for: [title, kicker, card_head, stat_hero, label]
+  # Action titles are SENTENCE case. Kickers are ALL CAPS. Never title-case a title.
+  case:
+    eyebrow: as_written
+    kicker: upper
+    title: sentence
+    label: upper
+
+# Two themes, one grid. Light is the default for client-facing findings decks
+# (matches DEMO_SYNTHETIC_CSCG_Ticketing_Deck). Dark matches the UNC kickoff and is
+# used for internal / kickoff / board decks.
+# Default for new projects. Every 2026 CSCG final is a dark navy deck.
+default_theme: dark
+
+themes:
+  light:
+    background: "FFFFFF"
+    card: "F1F4FA"
+    card_alt: "E4EBF6"
+    card_ink: "121630"    # headings inside a card
+    card_body: "3C4A63"   # body text inside a card
+    pill: "4B9CD3"        # header pill / agenda box fill
+    pill_ink: "FFFFFF"
+    ink: "121630"         # primary text
+    body: "3C4A63"        # body text
+    muted: "6B7A94"        # eyebrow, source, footer
+    rule: "D8E0EC"
+    accent: "4B9CD3"       # Carolina blue - the focal colour
+    accent_deep: "2E5A9E"
+    accent_light: "9AC4EF"
+    on_accent: "FFFFFF"
+    neutral_series: "C3CDDD"   # every non-focal bar
+    warning: "B25E00"
+  dark:
+    # Navy ground and blue cards from the Peter Millar / JGR finals. Card colour is
+    # darkened from the references' pale blue so white text stays readable (>= 4.5:1).
+    background: "14213D"
+    card: "24416F"
+    card_alt: "2E5288"
+    card_ink: "FFFFFF"
+    card_body: "E3ECF8"
+    pill: "8DBBEA"        # the references' light-blue header pills and agenda boxes
+    pill_ink: "0E1A33"
+    ink: "FFFFFF"
+    body: "D8E2F2"
+    muted: "9FB0C9"
+    rule: "34507D"
+    accent: "7FB8EE"
+    accent_deep: "2E5A9E"
+    accent_light: "81B6EB"
+    on_accent: "121630"
+    neutral_series: "5A6B8C"
+    warning: "E8A33D"
+
+# Carolina blue #4B9CD3 is UNC's official primary and is used as the focal accent
+# throughout the UNC kickoff deck. For non-UNC clients, override `accent` per project.
+palette:
+  carolina_blue: "4B9CD3"
+  navy: "121630"
+  # Categorical ramp for when a chart genuinely needs more than focal+neutral.
+  # Ordered so the first two are maximally distinguishable in greyscale.
+  categorical: ["4B9CD3", "1E3A63", "9AC4EF", "2E5A9E", "81B6EB", "5A6B8C"]
+  # Sequential ramp for Likert / ordered scales: low -> high
+  sequential: ["D8E0EC", "9AC4EF", "4B9CD3", "2E5A9E", "1E3A63"]
+
+# Logos replace the organisation names wherever a logo exists (2026-09 feedback: "use
+# the UNC logo instead of text UNC Athletics"). Paths are relative to the repo root.
+brand:
+  cscg_logo:
+    dark: "assets/logos/cscg_white.png"
+    light: "assets/logos/cscg_navy.png"
+  # Client logos live in project.yaml as `client_logo:`. Known clients get a default so
+  # a new UNC project picks the logo up without anyone remembering to set it.
+  known_client_logos:
+    "UNC Athletics": "assets/logos/unc.png"
+    "UNC": "assets/logos/unc.png"
+    "Carolina Athletics": "assets/logos/unc.png"
+  # Title slide lockup: CSCG mark | thin divider | client logo (Nike, JGR finals).
+  title_lockup_height: 1.55
+  # Every slide: CSCG + client logo bottom-left (Peter Millar, Nike finals).
+  footer_logo_height: 0.40
+  footer_logo_x: 0.40
+  footer_logo_gap: 0.22
+
+footer:
+  eyebrow_template: "{term} Carolina Sports Consulting Group"
+  confidential_label: "CONFIDENTIAL"
+  # The 2026 finals show no CONFIDENTIAL strip on body slides; the cover carries it.
+  confidential_on_every_slide: false
+  # Section tabs along the bottom, current section highlighted (Peter Millar, JGR).
+  # Drawn automatically when the deck has an agenda and slides carry `section:`.
+  section_tabs: true
+  section_tabs_x: 3.40
+  section_tabs_width: 7.10
+  section_tabs_height: 0.26
+  show_page_numbers: true
+  page_number_starts_at: 2      # title slide is unnumbered
+  # A banner stamped across every slide when the project is running on synthetic or
+  # unapproved data. Observed on the demo deck; keep it - it prevents accidents.
+  watermark_when_synthetic: "SYNTHETIC TEST DATA: NOT REAL RESPONSES"
+
+# ---------------------------------------------------------------------------
+# SLIDE LAYOUTS
+# Each is a contract the deck builder implements. `slots` are what the storyline
+# must supply. Adding a layout means adding a renderer in cscg/deck.py.
+# ---------------------------------------------------------------------------
+layouts:
+
+  title:
+    purpose: >
+      Open the deck. CSCG logo | client logo lockup, subject line, date. The client's
+      name is shown only when no client logo exists.
+    slots: [subject, descriptor, date]
+
+  agenda:
+    purpose: >
+      ALWAYS slide 2. The deck's sections, 3-6 of them, each a short noun phrase
+      (<= 4 words). No sentences, no numbers. Its items become the section tabs on
+      every later slide, so they must match the `section:` keys used by body slides.
+    slots: [items]
+    rules:
+      - "Slide 2, every deck."
+      - "3-6 items, each 4 words or fewer."
+      - "Every item names a section some later slide belongs to."
+
+  executive_summary:
+    purpose: >
+      Slide 3, straight after the agenda. Answer-first summary. 3-5 numbered findings, each a complete sentence carrying
+      its own number, each followed by an explicit 'So what:' line. This slide alone
+      should be sufficient if the client reads nothing else.
+    slots: [title, findings]   # findings: [{n, statement, so_what}]
+    rules:
+      - "3-5 findings. More than 5 means the storyline has not been prioritised."
+      - "Every statement contains a number and a base."
+      - "Every 'So what' names an action, a test, or a decision - never a restatement."
+
+  how_to_read:
+    purpose: >
+      Sample composition and limitations, stated BEFORE any finding. Big stat row on
+      top, method bullets below. This slide is non-negotiable in a CSCG findings deck.
+    slots: [title, stats, bullets]   # stats: [{value, label}]
+    rules:
+      - "Must disclose: field dates, n analysed, n excluded and why, how it was distributed."
+      - "Must quantify sample skew against a named external benchmark where one exists."
+      - "Must state whether results are weighted."
+      - "Must state the rule used for calling a difference."
+
+  chart_with_notes:
+    purpose: >
+      The workhorse. One chart carrying one comparison on the left; two or three labelled
+      annotation boxes on the right carrying the argument. The chart may be any type in
+      chart_rules.yaml, including a native table.
+    slots: [title, chart, notes]     # notes: [{label, text}] x2-3
+    geometry:
+      chart_x: 0.55
+      chart_width: 7.40
+      notes_x: 8.30
+      notes_width: 4.48
+    rules:
+      - "Exactly 3 notes. Labels drawn from the annotation vocabulary."
+      - "The chart shows one comparison. If it needs a legend key to be understood, simplify it."
+
+  comparison_pair:
+    purpose: >
+      Two small paired comparisons stacked, used to show that a difference does NOT
+      track a suspected variable. Null results get slides too.
+    slots: [title, charts, caption]   # charts: 2 chart specs
+
+  quotes_themes:
+    purpose: >
+      Qualitative evidence. 2-4 theme columns, each with a theme name, a quantified
+      prevalence line, and 1-2 attributed verbatims.
+    slots: [title, themes]   # themes: [{name, prevalence, quotes:[{text, attribution}]}]
+    rules:
+      - "Prevalence is always stated as a count over a base: '54 of 224 comments'."
+      - "Never state a percentage of open-text themes as if it were a survey percentage."
+      - "Every quote carries an attribution (segment + source)."
+
+  stat_row:
+    purpose: "3-4 hero numbers with captions. Used for framing, not for argument."
+    slots: [title, stats]
+
+  three_cards:
+    purpose: "Three parallel concepts: workstreams, principles, options."
+    slots: [title, cards]   # cards: [{n, head, sub, bullets}]
+
+  recommendation_table:
+    purpose: >
+      RECOMMENDATION / EVIDENCE / IMPLICATION rows. Used only when the project is
+      chartered to recommend rather than to open a discussion.
+    slots: [title, lead, rows]
+
+  discussion_questions:
+    purpose: >
+      The default CSCG close. Numbered questions for the client, each with an explicit
+      'Why it matters:' line grounded in a finding.
+    slots: [title, questions]   # questions: [{n, question, why}]
+
+  section:
+    purpose: "Divider between acts of the storyline. Use sparingly."
+    slots: [label, title]
+
+# Labels available to annotation boxes. Observed vocabulary - keep it small and
+# consistent so readers learn what each box means across the deck.
+annotation_vocabulary:
+  WHO CITES IT: "Which segment drives the number"
+  WATCH-OUT:    "The reason not to over-read this finding"
+  IMPLICATION:  "What this would change if true"
+  SO WHAT:      "Decision relevance"
+  ACROSS GROUPS: "Where the pattern holds or does not"
+  COMPOUNDING:  "How this interacts with another finding"
+  NOT A ___ EFFECT: "A confound explicitly ruled out"
+  CONTEXT:      "Outside evidence that frames the number"
+
+writing_rules:
+  - "Answer first. The title states the conclusion; the body proves it."
+  - "One message per slide. If a slide has two arguments, it is two slides."
+  - "Action titles are sentence case, contain the number, and read as a claim - not a topic."
+  - "Never write a title like 'Ticket Access Findings'. Write what the finding IS."
+  - "Say 'respondents', not 'students', whenever the sample is not representative."
+  - "Prefer '39% attended no home games' over 'attendance was low'."
+  - "No adjectives doing the work of evidence: cut 'significant', 'dramatic', 'overwhelming'
+     unless 'significant' refers to an actual test, in which case name the test."
+  - "Spell out the base on first use of any percentage on a slide."
+  - "Contractions are fine. Consulting-neutral, not stiff."
+  - "Never use em-dashes as a stylistic tic; a colon or a full stop usually reads better."
+  - "No slide ships without a source line."
+
+banned_phrases:
+  # These read as AI-generated or as unearned confidence.
+  - "delve"
+  - "leverage synergies"
+  - "it is important to note"
+  - "in today's fast-paced"
+  - "game-changer"
+  - "unlock"
+  - "robust insights"
+  - "deep dive"
+  - "holistic"
+  - "paradigm"
+  - "clearly shows"      # if it were clear you would not need to say so
+  - "proves that"        # survey data does not prove
+  - "drives"             # implies causation; use 'is associated with'
+  - "causes"             # unless from an actual experiment
