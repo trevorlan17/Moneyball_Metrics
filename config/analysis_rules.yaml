@@ -1,0 +1,189 @@
+# CSCG ANALYSIS RULES
+# The standing analytical policy for every CSCG engagement. The analysis engine reads
+# this file; the agents are instructed to obey it. Change policy here, not in code.
+#
+# Derived from the analytical posture in "CSCG Final Analysis - Julia Chen.xlsx"
+# (Notes+Method, Cleaning Checks) and the evidence discipline in the demo ticketing deck.
+
+meta:
+  version: "1.0"
+
+# --------------------------------------------------------------------------
+# SAMPLE AND BASE REPORTING
+# --------------------------------------------------------------------------
+bases:
+  # Below this, a group is reported as directional only and marked with a dagger.
+  small_group_threshold: 30
+  small_group_marker: "†"
+  small_group_note: "† marks groups with fewer than 30 respondents: directional only."
+  # Below this, do not report the group at all.
+  suppress_below: 10
+  # Every reported statistic must carry its base. No exceptions.
+  require_base_on_every_statistic: true
+  # Language for non-probability samples.
+  respondent_language: "Respondents, not all students."
+  require_respondent_language_when_nonrandom: true
+
+# --------------------------------------------------------------------------
+# DATA QUALITY
+# Default screens. A project may add screens in project.yaml but removing one
+# requires a written justification in the cleaning report.
+# --------------------------------------------------------------------------
+quality_screens:
+  duplicates:
+    enabled: true
+    description: "Duplicate respondent IDs, or identical response vectors."
+  speeders:
+    enabled: true
+    # Default is relative: a third of the median completion time. Absolute floors
+    # (e.g. 120s) should be set per project once the instrument length is known.
+    rule: "fraction_of_median"
+    fraction: 0.33
+    description: "Implausibly fast completions."
+  straightlining:
+    enabled: true
+    min_scale_items: 6
+    description: "Identical answer to every item in a rating battery."
+  impossible_values:
+    enabled: true
+    description: "Values outside the logically possible range for the variable."
+  incompletes:
+    enabled: true
+    min_completion_fraction: 0.5
+    description: "Fewer than half the applicable questions answered."
+  # Always run: compare the excluded rows against the kept rows on key outcomes.
+  # If exclusion moves a headline number, that belongs in the limitations register.
+  require_exclusion_impact_check: true
+
+# --------------------------------------------------------------------------
+# STATISTICAL TESTING
+# The governing principle: do not run a test because it is available. Run it because
+# a decision depends on whether the difference is real.
+# --------------------------------------------------------------------------
+testing:
+  # A difference is only CALLED in a title or an exec summary when it clears both bars.
+  call_a_difference_when:
+    statistically_tested: true
+    adjusted_p_below: 0.05
+    min_absolute_gap_pp: 10        # percentage points - applies to PERCENT metrics only
+    # A percentage-point threshold is meaningless for a mean difference or a
+    # correlation. Those gate on effect size instead: an effect the interpretation
+    # floors call 'negligible' is not a finding, however small its p-value. With
+    # n in the thousands, trivial effects clear p<0.05 routinely.
+    min_effect_reading_for_means: small
+    min_effect_reading_for_correlations: small
+  # Multiple comparisons are the default failure mode of survey work: dozens of
+  # crosstabs, one of them lands at p<0.05 by chance. Benjamini-Hochberg across the
+  # whole family of tests run in a cycle.
+  multiple_comparison_adjustment: "benjamini_hochberg"
+  adjustment_family: "per_analysis_run"
+  test_selection:
+    two_proportions: "chi2 (Fisher exact when any expected cell < 5)"
+    proportions_across_k_groups: "chi2"
+    two_means: "Welch t-test (does not assume equal variance)"
+    means_across_k_groups: "one-way ANOVA, Welch correction"
+    ordinal_vs_group: "Mann-Whitney U / Kruskal-Wallis"
+    two_continuous: "Pearson r, with Spearman reported when the relationship is non-linear or ordinal"
+    paired: "Wilcoxon signed-rank"
+  effect_sizes:
+    # Always report alongside p. A significant trivial difference is not a finding.
+    required: true
+    two_proportions: "percentage-point difference + Cramer's V"
+    two_means: "Cohen's d"
+    correlation: "r (and r-squared where it aids interpretation)"
+  interpretation_floors:
+    cramers_v: {negligible: 0.1, small: 0.2, moderate: 0.3}
+    cohens_d:  {negligible: 0.2, small: 0.5, moderate: 0.8}
+    pearson_r: {negligible: 0.1, small: 0.3, moderate: 0.5}
+
+# --------------------------------------------------------------------------
+# WHAT NOT TO DO
+# --------------------------------------------------------------------------
+prohibited:
+  - "Reporting significance without having run a test."
+  - "Running a regression when a two-way crosstab answers the question."
+  - "Reporting a subgroup below the suppression threshold."
+  - "Describing a correlation as a cause, a driver, an effect, or an impact."
+  - "Weighting without documenting the weighting scheme and unweighted bases."
+  - "Dropping rows after seeing how the drop changes the result."
+  - "Reporting a p-value without the base and the effect size."
+  - "Silently changing a base between slides."
+  - "Inventing a benchmark. External comparison figures require a named, dated source."
+
+# --------------------------------------------------------------------------
+# CAUSAL LANGUAGE
+# The single most common way a student consulting deck overstates itself.
+# --------------------------------------------------------------------------
+causal_language:
+  allowed_without_experiment:
+    - "is associated with"
+    - "tracks with"
+    - "co-occurs with"
+    - "is higher among"
+    - "predicts (statistically)"
+  requires_experiment_or_behavioural_data:
+    - "causes"
+    - "drives"
+    - "leads to"
+    - "results in"
+    - "because of"
+  # The Coastal State analysis is the model here: when a survey correlation is
+  # corroborated by an independently recorded behaviour (gate scans, renewals),
+  # the finding may be stated more strongly - and the corroboration must be named.
+  triangulation_note: >
+    A survey correlation supported by independently recorded behaviour may be stated
+    more confidently, but the behavioural source must be named on the slide.
+
+# --------------------------------------------------------------------------
+# SELF-REPORT
+# --------------------------------------------------------------------------
+self_report:
+  known_biases:
+    - "Stated intent overstates behaviour. Check against actuals whenever actuals exist."
+    - "Recalled frequency is inflated and the error runs one direction."
+    - "Stated importance rankings disagree with revealed importance. Trust revealed."
+  require_actuals_comparison_when_available: true
+
+# --------------------------------------------------------------------------
+# SEGMENTATION
+# --------------------------------------------------------------------------
+segmentation:
+  # Segments must be declared in project.yaml before analysis, not discovered after.
+  require_preregistration: true
+  max_segment_variables_per_cycle: 5
+  # Segment overlap is the trap: a "Greek life" difference that is really a
+  # "undergraduate" difference. Always check whether a segment gap survives
+  # conditioning on the other declared segments.
+  require_overlap_check: true
+  overlap_note: >
+    When two segments overlap, report the cut that isolates the effect and say so on
+    the slide (e.g. "Undergraduates only").
+
+# --------------------------------------------------------------------------
+# QUALITATIVE
+# --------------------------------------------------------------------------
+qualitative:
+  # Themes are counted, but counts from open text are NOT survey percentages.
+  prevalence_format: "{count} of {base} comments"
+  forbid_percentage_of_comments_in_titles: true
+  min_quotes_per_theme: 1
+  max_quotes_per_theme: 2
+  require_attribution: true
+  attribution_format: "{segment}, {source}"
+  # A theme raised only after a moderator prompt is weaker evidence than one raised
+  # spontaneously. Record which.
+  track_prompted_vs_spontaneous: true
+  focus_group_caveat: >
+    Focus groups and open comments add voice, not prevalence. Never generalise a
+    focus-group theme to the population.
+
+# --------------------------------------------------------------------------
+# REPRODUCIBILITY
+# --------------------------------------------------------------------------
+reproducibility:
+  preserve_raw_immutable: true
+  record_run_id: true
+  record_code_path_for_every_finding: true
+  record_row_counts_at_every_step: true
+  # Everything a slide asserts must resolve to a finding ID.
+  require_finding_id_for_every_claim: true

@@ -1,0 +1,157 @@
+# CSCG CHART RULES
+# Chart choice is an analytical decision, not a styling one. This file encodes which
+# chart answers which question, and how it must be drawn.
+#
+# Derived from the chart usage in DEMO_SYNTHETIC_CSCG_Ticketing_Deck (horizontal bars
+# with value labels, paired segment comparisons, stacked Likert) and the
+# loud-vs-decisive scatter in CSCG Coastal State Athletics.
+
+meta:
+  version: "1.0"
+
+# --------------------------------------------------------------------------
+# CHART SELECTION - driven by the analytical question, not by variety
+# --------------------------------------------------------------------------
+selection:
+  # Chosen by the claim the title makes. Variety is not a goal in itself, but the
+  # 2026 CSCG finals (Peter Millar, JGR, Nike) and the McKinsey references mix donuts,
+  # tables, columns and lines with bars. A deck where every chart is a horizontal bar
+  # is usually a deck where the chart was chosen before the claim.
+  - question: "How do two or three groups compare on one percentage?"
+    chart: grouped_bar
+    note: "One metric, groups as bars, n in the label."
+
+  - question: "Which items are cited most, out of a list?"
+    chart: ranked_bar
+    note: "Sort descending. Highlight only the item the title is about."
+
+  - question: "How does ONE whole split into 2-5 parts that sum to 100%?"
+    chart: donut
+    note: >
+      Part-to-whole only. The slices must sum to ~100% (validated) and must be mutually
+      exclusive categories. The headline share goes in the centre (McKinsey UCA style).
+      Never for 'select all that apply', never for comparisons between groups.
+
+  - question: "A two-part split where one side is the whole point?"
+    chart: pie
+    note: "2-3 slices only. Prefer donut when a centre number carries the claim."
+
+  - question: "Does an outcome move across an ORDERED band, or over time?"
+    chart: line
+    note: >
+      x must be genuinely ordered (quartiles, bands, dates, cycles). Never nominal
+      categories - a line implies continuity between the points.
+
+  - question: "How is an ordered scale (1-5, 'not at all' to 'extremely') distributed?"
+    chart: column
+    note: "Vertical bars in scale order (Peter Millar 'relevance now vs in 5-10 years')."
+
+  - question: "Several attributes across several items, where exact values matter?"
+    chart: table
+    note: >
+      Native, editable PowerPoint table (Peter Millar competitive analysis, McKinsey
+      value-chain tables). Use when a chart would need a legend to be read. Highlight
+      the row or cell the title is about.
+
+  - question: "How is an ordered/Likert scale distributed, by group?"
+    chart: stacked_likert
+    note: "Diverging around the neutral point. Label only segments >= 8%."
+
+  - question: "Is a stated priority matched by a measured relationship?"
+    chart: quadrant_scatter
+    note: "The 'loud vs decisive' chart. Label every point; axes start at zero."
+
+  - question: "How large is a single number, with no comparison?"
+    chart: stat_callout
+    note: "Not a chart. A big number (stat_row layout). Never a one-bar bar chart."
+
+variety:
+  # verify.py warns when a deck with this many charts uses a single chart family.
+  min_charts_for_variety_check: 3
+  families:
+    bar: [grouped_bar, ranked_bar, column, stacked_likert]
+    share: [donut, pie]
+    trend: [line]
+    table: [table]
+    scatter: [quadrant_scatter]
+
+validity:
+  share_sum_tolerance: 0.03      # donut/pie slices must sum to 1 +/- this
+  max_share_slices: 5
+  max_pie_slices: 3
+  min_line_points: 3
+
+forbidden:
+  - "3-D anything."
+  - "Donut or pie whose slices do not sum to 100%, or with more than 5 slices."
+  - "A pie or donut comparing two separate groups."
+  - "A line across unordered categories."
+  - "Dual y-axes."
+  - "Truncated axes on bar or column charts. Bars start at zero, always."
+  - "Decorative charts: no title takeaway and no annotation."
+  - "Colour used for decoration rather than to mark the focal comparison."
+  - "Legends where direct labelling would work."
+
+format:
+  figure:
+    dpi: 220
+    transparent: true          # the slide background shows through
+    font: "Arial"
+  colour:
+    # The core rule: one focal colour, everything else neutral grey. The reader's eye
+    # should land on the comparison the title is making.
+    focal: accent              # resolves against the active theme
+    non_focal: neutral_series
+    max_categorical_series: 4
+  axes:
+    show_x_axis: false         # value labels replace the axis on bar charts
+    show_y_axis: true
+    gridlines: false
+    spines: ["left"]           # horizontal bars keep only the category spine
+    start_at_zero: true
+  labels:
+    value_labels: true
+    # Labels are formatted from the finding's metric, so a correlation never renders
+    # as a percentage. A chart spec may override with `value_format:` for the one case
+    # the metric cannot express - the mean of a variable that is itself a percentage.
+    value_label_format_by_metric:
+      percent: "{:.0%}"
+      percent_100: "{:.0f}%"      # spec override: mean of a 0-100 percentage variable
+      correlation: "{:.2f}"
+      mean: "{:,.2f}"
+      count: "{:,.0f}"
+    # Bases go in the category label, so the base travels with the bar.
+    base_in_category_label: true
+    base_format: "({label}, n={n})"
+    small_group_marker: "†"
+    max_category_label_chars: 46
+  bars:
+    height: 0.55
+    group_gap: 0.35
+    # Figure height follows the number of bars. A fixed height renders a two-group
+    # comparison as two slabs filling the zone, which overstates the difference.
+    height_per_bar_in: 0.52
+    min_figure_height_in: 1.15
+    max_figure_height_in: 3.9
+  likert:
+    neutral_point: "Neither agree nor disagree"
+    min_label_share: 0.08
+  annotation:
+    # A chart may carry at most one in-chart annotation; the rest belong in the
+    # slide's annotation boxes.
+    max_in_chart_annotations: 1
+
+output:
+  format: png                  # embedded in the deck
+  also_emit_svg: false         # off by default: doubled chart render time. Turn on to hand-edit.
+  also_emit_data_csv: true     # every chart ships the exact numbers it drew
+  naming: "{finding_id}_{chart_type}.png"
+
+# --------------------------------------------------------------------------
+# TRACEABILITY
+# --------------------------------------------------------------------------
+traceability:
+  # Every chart is rendered FROM a finding record. A chart with no finding ID cannot
+  # be built - this is what stops a chart from drifting away from the analysis.
+  require_finding_id: true
+  emit_sidecar_json: true      # {finding_id, values drawn, base, run_id}

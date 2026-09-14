@@ -1,0 +1,23 @@
+# analysis/declared.yaml
+# Facts your written insights rely on that this pipeline did not compute.
+#
+# Every one needs a base and a source. They become citable findings so the claim linter
+# can check the slides, but they are tagged verified:false and the linter warns on every
+# slide that uses one. That is deliberate: a declared number is only as good as its source.
+
+facts:
+  - label: "Grad/professional respondents who didn't know how to get tickets"
+    value: 0.56                 # 0-1 for percent; the raw number for count/mean/correlation
+    metric: percent             # percent | count | mean | correlation
+    base: 99                    # n behind the number - required
+    base_definition: "Grad/professional respondents naming at least one barrier"
+    source: "CSCG Student Ticketing Survey, fielded Sep 29 - Oct 3 2026, Q12"
+    note: "Self-reported; multiple answers allowed."
+
+  - label: "UNC students who are grad or professional"
+    value: 0.36
+    metric: percent
+    base: 34000
+    base_definition: "All enrolled UNC students"
+    source: "UNC By the Numbers 2026"
+    note: "External benchmark, not from our survey."
